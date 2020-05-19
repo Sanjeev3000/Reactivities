@@ -4,6 +4,7 @@ import "./app/layouts/styles.css";
 import App from "./app/layouts/App";
 import * as serviceWorker from "./serviceWorker";
 
+const test = "s";
 ReactDOM.render(
   <React.StrictMode>
     <App />
