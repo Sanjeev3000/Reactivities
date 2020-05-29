@@ -5,6 +5,8 @@ using Application.Activities;
 using Domain;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+
 namespace API.Controllers
 {
     [Route("api/[controller]")]
@@ -12,8 +14,10 @@ namespace API.Controllers
     public class ActivitiesController : ControllerBase
     {
         private readonly IMediator _mediator;
-        public ActivitiesController(IMediator mediator)
+        private readonly ILogger<ActivitiesController> _logger;
+        public ActivitiesController(IMediator mediator, ILogger<ActivitiesController> logger)
         {
+            this._logger = logger;
             this._mediator = mediator;
         }
 
@@ -27,7 +31,9 @@ namespace API.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult<Unit>> Edit(Guid id, Edit.Command command)
         {
+
             command.Id = id;
+            command.Date = command.Date.Value.AddHours(-4);
             return await _mediator.Send(command);
         }
 

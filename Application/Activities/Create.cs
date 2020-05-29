@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Domain;
 using FluentValidation;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Persistence;
 
 namespace Application.Activities
@@ -46,8 +47,10 @@ namespace Application.Activities
         public class Handler : IRequestHandler<Command>
         {
             private readonly DataContext _context;
-            public Handler(DataContext context)
+            private readonly ILogger<Handler> _logger;
+            public Handler(DataContext context, ILogger<Handler> logger)
             {
+                this._logger = logger;
                 this._context = context;
             }
 

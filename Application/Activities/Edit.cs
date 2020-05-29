@@ -6,6 +6,7 @@ using Application.Errors;
 using Domain;
 using FluentValidation;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Persistence;
 
 namespace Application.Activities
@@ -44,14 +45,18 @@ namespace Application.Activities
         public class Handler : IRequestHandler<Command>
         {
             private readonly DataContext _context;
-            public Handler(DataContext context)
+            private readonly ILogger<Handler> _logger;
+            public Handler(DataContext context, ILogger<Handler> logger)
             {
+                this._logger = logger;
                 this._context = context;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
                 Activity activity = await _context.Activities.FindAsync(request.Id);
+                _logger.LogInformation(request.Date.Value.ToString());
+                _logger.LogInformation(DateTime.Parse(request.Date.Value.ToString(), null, System.Globalization.DateTimeStyles.RoundtripKind).ToString());
 
                 if (activity == null)
                     throw new RestException(HttpStatusCode.NotFound, new { activity = "Not Found" });

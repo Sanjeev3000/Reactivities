@@ -6,6 +6,7 @@ using System.Threading;
 using Persistence;
 using Application.Errors;
 using System.Net;
+using Microsoft.Extensions.Logging;
 
 namespace Application.Activities
 {
@@ -23,15 +24,18 @@ namespace Application.Activities
         public class Handler : IRequestHandler<Query, Activity>
         {
             private readonly DataContext _context;
+            private readonly ILogger<Handler> _logger;
 
-            public Handler(DataContext context)
+            public Handler(DataContext context, ILogger<Handler> logger)
             {
+                this._logger = logger;
                 this._context = context;
 
             }
             public async Task<Activity> Handle(Query request, CancellationToken cancellationToken)
             {
                 Activity activity = await _context.Activities.FindAsync(request.Id);
+                //  _logger.LogInformation(activity.Date.ToString());
                 if (activity == null)
                     throw new RestException(HttpStatusCode.NotFound, new { activity = "Not Found" });
 
