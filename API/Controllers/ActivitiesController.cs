@@ -4,28 +4,21 @@ using System.Threading.Tasks;
 using Application.Activities;
 using Domain;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 namespace API.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class ActivitiesController : ControllerBase
+
+    public class ActivitiesController : BaseController
     {
-        private readonly IMediator _mediator;
-        private readonly ILogger<ActivitiesController> _logger;
-        public ActivitiesController(IMediator mediator, ILogger<ActivitiesController> logger)
-        {
-            this._logger = logger;
-            this._mediator = mediator;
-        }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult<Unit>> Delete(Guid id)
         {
 
-            return await _mediator.Send(new Delete.Command { Id = id });
+            return await Mediator.Send(new Delete.Command { Id = id });
         }
 
         [HttpPut("{id}")]
@@ -34,26 +27,27 @@ namespace API.Controllers
 
             command.Id = id;
             command.Date = command.Date.Value.AddHours(-4);
-            return await _mediator.Send(command);
+            return await Mediator.Send(command);
         }
 
         [HttpPost]
         public async Task<ActionResult<Unit>> Create(Create.Command command)
         {
-            return await _mediator.Send(command);
+            return await Mediator.Send(command);
         }
 
         [HttpGet]
         public async Task<ActionResult<List<Activity>>> List()
         {
 
-            return await _mediator.Send(new List.Query());
+            return await Mediator.Send(new List.Query());
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<Activity>> Details(Guid id)
         {
-            return await _mediator.Send(new Details.Query(id));
+            return await Mediator.Send(new Details.Query(id));
         }
     }
 }
